@@ -1,10 +1,10 @@
 import { useState } from "react";
 import axios from "axios";
-import UploadBox from "./components/UploadBox";
+import Hero from "./components/Hero";
+import TrustBar from "./components/TrustBar";
 import ScoreCard from "./components/ScoreCard";
 import ResultsList from "./components/ResultsList";
 
-// Use env variable for production, fallback to localhost for dev
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 export default function App() {
@@ -35,48 +35,57 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 px-6 py-12">
-      <header className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">
-          AI Resume Analyzer
-        </h1>
-        <p className="text-gray-400 text-lg">
-          Upload your resume and get instant AI feedback
-        </p>
-      </header>
-
-      <UploadBox onAnalyze={handleAnalyze} loading={loading} />
-
-      {loading && (
-        <p className="text-center text-indigo-400 mt-8 animate-pulse">
-          🤖 Analyzing your resume...
-        </p>
+    <div className="pastel-bg">
+      {/* Landing view */}
+      {!result && !loading && (
+        <>
+          <Hero onAnalyze={handleAnalyze} loading={loading} />
+          <TrustBar />
+        </>
       )}
 
+      {/* Loading state */}
+      {loading && (
+        <div className="max-w-2xl mx-auto px-8 py-20 text-center fade-in-up">
+          <div className="inline-block w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-6" />
+          <p className="text-gray-700 text-lg">🤖 Analyzing your resume...</p>
+          <p className="text-gray-500 text-sm mt-2">
+            This takes 5–15 seconds
+          </p>
+        </div>
+      )}
+
+      {/* Results view */}
       {result && (
-        <div className="max-w-2xl mx-auto mt-10 space-y-5">
+        <div className="max-w-3xl mx-auto px-8 py-12 space-y-5 fade-in-up">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">Your Results</h2>
+            <button
+              onClick={() => setResult(null)}
+              className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm text-gray-700 hover:border-indigo-300 hover:text-indigo-600 transition"
+            >
+              ← Analyze Another
+            </button>
+          </div>
+
           <ScoreCard score={result.score} />
           <ResultsList
             title="✅ Strengths"
             items={result.strengths}
-            color="text-green-400"
+            color="text-green-600"
           />
           <ResultsList
             title="⚠️ Weaknesses"
             items={result.weaknesses}
-            color="text-yellow-400"
+            color="text-yellow-600"
           />
           <ResultsList
             title="💡 Suggestions"
             items={result.suggestions}
-            color="text-indigo-400"
+            color="text-indigo-600"
           />
         </div>
       )}
-
-      <footer className="text-center text-gray-600 text-sm mt-16">
-        Built with React + FastAPI
-      </footer>
     </div>
   );
 }
