@@ -16,7 +16,7 @@ export default function Hero({ onAnalyze, loading }) {
       {/* Left — Headline */}
       <div className="fade-in-up">
         <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight mb-6">
-          Instant AI Feedback
+          Instantss AI Feedback
           <br />
           on Your Resume.
         </h1>
