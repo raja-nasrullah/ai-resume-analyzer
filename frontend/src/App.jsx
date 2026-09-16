@@ -11,6 +11,7 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 export default function App() {
   const [result, setResult] = useState(null);
   const [improvedText, setImprovedText] = useState(null);
+  const [originalFile, setOriginalFile] = useState(null); // NEW
   const [loading, setLoading] = useState(false);
   const [improving, setImproving] = useState(false);
 
@@ -18,6 +19,7 @@ export default function App() {
     setLoading(true);
     setResult(null);
     setImprovedText(null);
+    setOriginalFile(file); // NEW: remember the uploaded file
 
     const formData = new FormData();
     formData.append("file", file);
@@ -66,6 +68,7 @@ export default function App() {
   const handleReset = () => {
     setResult(null);
     setImprovedText(null);
+    setOriginalFile(null); // NEW: clear the file
   };
 
   return (
@@ -108,7 +111,6 @@ export default function App() {
             {/* Improve CTA */}
             {!improvedText ? (
               <div className="rounded-3xl p-8 shadow-md flex flex-col items-center justify-center text-center text-white bg-gradient-to-br from-purple-600 via-purple-500 to-indigo-600 relative overflow-hidden">
-                {/* Decorative circles */}
                 <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/10" />
                 <div className="absolute -bottom-16 -left-10 w-52 h-52 rounded-full bg-white/5" />
 
@@ -131,7 +133,9 @@ export default function App() {
             ) : (
               <div className="rounded-3xl p-8 shadow-md bg-gradient-to-br from-emerald-500 to-emerald-600 text-white flex flex-col items-center justify-center text-center">
                 <p className="text-xl font-bold mb-2">✅ Resume Improved!</p>
-                <p className="text-sm opacity-90 mb-4">Scroll down to see the rewrite</p>
+                <p className="text-sm opacity-90 mb-4">
+                  Scroll down to download it
+                </p>
               </div>
             )}
           </div>
@@ -169,10 +173,13 @@ export default function App() {
             icon="💡"
           />
 
-          {/* Improved resume */}
+          {/* Improved resume — passes originalFile for in-place DOCX edit */}
           {improvedText && (
             <div className="mt-8">
-              <ImprovedResume improvedText={improvedText} />
+              <ImprovedResume
+                improvedText={improvedText}
+                originalFile={originalFile}
+              />
             </div>
           )}
         </div>
