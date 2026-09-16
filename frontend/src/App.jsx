@@ -5,13 +5,22 @@ import TrustBar from "./components/TrustBar";
 import ScoreCard from "./components/ScoreCard";
 import ResultsList from "./components/ResultsList";
 import ImprovedResume from "./components/ImprovedResume";
+import {
+  Target,
+  Sparkles,
+  CheckCircle2,
+  AlertTriangle,
+  Lightbulb,
+  ArrowLeft,
+  Loader2,
+} from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 export default function App() {
   const [result, setResult] = useState(null);
   const [improvedText, setImprovedText] = useState(null);
-  const [originalFile, setOriginalFile] = useState(null); // NEW
+  const [originalFile, setOriginalFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [improving, setImproving] = useState(false);
 
@@ -19,7 +28,7 @@ export default function App() {
     setLoading(true);
     setResult(null);
     setImprovedText(null);
-    setOriginalFile(file); // NEW: remember the uploaded file
+    setOriginalFile(file);
 
     const formData = new FormData();
     formData.append("file", file);
@@ -68,7 +77,7 @@ export default function App() {
   const handleReset = () => {
     setResult(null);
     setImprovedText(null);
-    setOriginalFile(null); // NEW: clear the file
+    setOriginalFile(null);
   };
 
   return (
@@ -84,8 +93,8 @@ export default function App() {
       {/* Loading state */}
       {loading && (
         <div className="max-w-2xl mx-auto px-8 py-20 text-center fade-in-up">
-          <div className="inline-block w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-6" />
-          <p className="text-gray-700 text-lg">🤖 Analyzing your resume...</p>
+          <Loader2 className="w-16 h-16 text-indigo-500 animate-spin mx-auto mb-6" strokeWidth={2} />
+          <p className="text-gray-700 text-lg">Analyzing your resume...</p>
           <p className="text-gray-500 text-sm mt-2">This takes 5–15 seconds</p>
         </div>
       )}
@@ -98,9 +107,10 @@ export default function App() {
             <h1 className="text-3xl font-bold text-gray-900">Your Results</h1>
             <button
               onClick={handleReset}
-              className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm text-gray-700 hover:border-indigo-300 hover:text-indigo-600 transition shadow-sm"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm text-gray-700 hover:border-indigo-300 hover:text-indigo-600 transition shadow-sm"
             >
-              ← Analyze Another
+              <ArrowLeft className="w-4 h-4" strokeWidth={2.5} />
+              Analyze Another
             </button>
           </div>
 
@@ -115,25 +125,31 @@ export default function App() {
                 <div className="absolute -bottom-16 -left-10 w-52 h-52 rounded-full bg-white/5" />
 
                 <div className="relative z-10">
-                  <p className="text-xl font-bold mb-2">
-                    🎯 Want to score 100/100?
-                  </p>
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Target className="w-6 h-6" strokeWidth={2.5} />
+                    <p className="text-xl font-bold">Want to score 100/100?</p>
+                  </div>
                   <p className="text-sm opacity-90 mb-5 max-w-xs">
                     Let AI rewrite your resume addressing every weakness
                   </p>
                   <button
                     onClick={handleImprove}
                     disabled={improving}
-                    className="px-5 py-2.5 rounded-full bg-white text-purple-700 font-semibold hover:bg-gray-50 transition disabled:opacity-50 text-sm shadow-lg"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-purple-700 font-semibold hover:bg-gray-50 transition disabled:opacity-50 text-sm shadow-lg"
                   >
-                    {improving ? "✨ Rewriting..." : "✨ Improve My Resume with AI"}
+                    <Sparkles
+                      className={`w-4 h-4 ${improving ? "animate-spin" : ""}`}
+                      strokeWidth={2.5}
+                    />
+                    {improving ? "Rewriting..." : "Improve My Resume with AI"}
                   </button>
                 </div>
               </div>
             ) : (
               <div className="rounded-3xl p-8 shadow-md bg-gradient-to-br from-emerald-500 to-emerald-600 text-white flex flex-col items-center justify-center text-center">
-                <p className="text-xl font-bold mb-2">✅ Resume Improved!</p>
-                <p className="text-sm opacity-90 mb-4">
+                <CheckCircle2 className="w-10 h-10 mb-3" strokeWidth={2.5} />
+                <p className="text-xl font-bold mb-2">Resume Improved!</p>
+                <p className="text-sm opacity-90">
                   Scroll down to download it
                 </p>
               </div>
@@ -151,7 +167,7 @@ export default function App() {
               title="Strengths"
               items={result.strengths}
               color="text-green-600"
-              icon="✅"
+              icon={CheckCircle2}
               badge={`+${result.strengths?.length || 0} insights`}
               badgeColor="bg-green-50 text-green-700"
             />
@@ -159,7 +175,7 @@ export default function App() {
               title="Weaknesses"
               items={result.weaknesses}
               color="text-yellow-600"
-              icon="⚠️"
+              icon={AlertTriangle}
               badge="Needs improvement"
               badgeColor="bg-yellow-50 text-yellow-700"
             />
@@ -170,10 +186,11 @@ export default function App() {
             title="Suggestions"
             items={result.suggestions}
             color="text-purple-600"
-            icon="💡"
+            icon={Lightbulb}
+            badgeColor="bg-purple-50 text-purple-700"
           />
 
-          {/* Improved resume — passes originalFile for in-place DOCX edit */}
+          {/* Improved resume */}
           {improvedText && (
             <div className="mt-8">
               <ImprovedResume

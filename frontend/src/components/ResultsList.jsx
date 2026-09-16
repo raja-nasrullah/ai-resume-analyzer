@@ -1,10 +1,13 @@
-export default function ResultsList({ title, items, color, icon, badge, badgeColor }) {
+export default function ResultsList({ title, items, color, icon: Icon, badge, badgeColor }) {
   return (
     <div className="bg-white rounded-2xl p-6 shadow-md hover:shadow-lg transition h-full">
-      {/* Header with icon + badge */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          {icon && <span className="text-xl">{icon}</span>}
+          {Icon && (
+            <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${badgeColor || "bg-gray-50"}`}>
+              <Icon className={`w-4 h-4 ${color}`} strokeWidth={2.5} />
+            </div>
+          )}
           <h2 className={`text-base font-semibold ${color}`}>{title}</h2>
         </div>
         {badge && (
