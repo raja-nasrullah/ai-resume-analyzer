@@ -4,18 +4,7 @@ const API_URL =
   import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 export default function ImprovedResume({ improvedText }) {
-  const [copied, setCopied] = useState(false);
   const [downloading, setDownloading] = useState(false);
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(improvedText);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      alert("Could not copy to clipboard.");
-    }
-  };
 
   const handleDownload = async () => {
     setDownloading(true);
@@ -45,38 +34,66 @@ export default function ImprovedResume({ improvedText }) {
   };
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-md">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-        <h2 className="text-lg font-semibold text-emerald-600">
-          🚀 Improved Resume (100/100)
-        </h2>
-        <div className="flex gap-2">
-          <button
-            onClick={handleCopy}
-            className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm font-medium text-gray-700 transition"
-          >
-            {copied ? "✓ Copied" : "Copy"}
-          </button>
-          <button
-            onClick={handleDownload}
-            disabled={downloading}
-            className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-sm font-medium text-white transition disabled:opacity-50"
-          >
-            {downloading ? "Preparing..." : "⬇ Download DOCX"}
-          </button>
-        </div>
+    <div className="bg-white rounded-3xl p-10 shadow-md text-center">
+      {/* Success icon */}
+      <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-100 flex items-center justify-center">
+        <svg
+          className="w-8 h-8 text-emerald-600"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M5 13l4 4L19 7"
+          />
+        </svg>
       </div>
 
-      {/* Resume content */}
-      <div className="bg-gray-50 rounded-xl p-5 max-h-[600px] overflow-y-auto">
-        <pre className="whitespace-pre-wrap text-sm text-gray-800 font-mono leading-relaxed">
-          {improvedText}
-        </pre>
-      </div>
+      {/* Heading */}
+      <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        Your resume is ready!
+      </h2>
+      <p className="text-gray-500 text-sm mb-6">
+        Rewritten by AI to score 100/100
+      </p>
 
-      <p className="text-xs text-gray-500 mt-3 text-center">
-        ✨ Rewritten by AI to address all weaknesses and suggestions
+      {/* Download button */}
+      <button
+        onClick={handleDownload}
+        disabled={downloading}
+        className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 transition disabled:opacity-50"
+      >
+        {downloading ? (
+          <>
+            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            Preparing...
+          </>
+        ) : (
+          <>
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
+              />
+            </svg>
+            Download Improved Resume
+          </>
+        )}
+      </button>
+
+      {/* Subtext */}
+      <p className="text-xs text-gray-400 mt-4">
+        📄 DOCX format · Opens in Word, Google Docs, Pages
       </p>
     </div>
   );
