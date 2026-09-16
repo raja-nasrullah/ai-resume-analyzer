@@ -1,19 +1,20 @@
 import { useState } from "react";
+import { CheckCircle2, Download } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 export default function ImprovedResume({ improvedText, originalFile }) {
-  const [downloading, setDownloading] = useState(null);
+  const [downloading, setDownloading] = useState(false);
 
   const isDocx = originalFile?.name?.toLowerCase().endsWith(".docx");
 
-  const download = async (format) => {
-    setDownloading(format);
+  const handleDownload = async () => {
+    setDownloading(true);
     try {
       let response;
 
-      // DOCX + original was DOCX → in-place edit (same design)
-      if (format === "docx" && isDocx) {
+      // If original was DOCX → in-place edit (same design)
+      if (isDocx) {
         const formData = new FormData();
         formData.append("file", originalFile);
         formData.append("improved_text", improvedText);
@@ -23,9 +24,8 @@ export default function ImprovedResume({ improvedText, originalFile }) {
           body: formData,
         });
       } else {
-        // PDF or original was PDF → template-based download
-        const endpoint = format === "pdf" ? "/api/download-pdf" : "/api/download";
-        response = await fetch(`${API_URL}${endpoint}`, {
+        // Fallback: template-based DOCX
+        response = await fetch(`${API_URL}/api/download`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ improved_text: improvedText }),
@@ -38,7 +38,7 @@ export default function ImprovedResume({ improvedText, originalFile }) {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `improved_resume.${format}`;
+      a.download = "improved_resume.docx";
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -46,7 +46,7 @@ export default function ImprovedResume({ improvedText, originalFile }) {
     } catch {
       alert("Could not download. Please try again.");
     } finally {
-      setDownloading(null);
+      setDownloading(false);
     }
   };
 
@@ -54,15 +54,7 @@ export default function ImprovedResume({ improvedText, originalFile }) {
     <div className="bg-white rounded-3xl p-10 shadow-md text-center">
       {/* Success icon */}
       <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-100 flex items-center justify-center">
-        <svg
-          className="w-8 h-8 text-emerald-600"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-        </svg>
+        <CheckCircle2 className="w-8 h-8 text-emerald-600" strokeWidth={2.5} />
       </div>
 
       <h2 className="text-2xl font-bold text-gray-900 mb-2">
@@ -74,75 +66,24 @@ export default function ImprovedResume({ improvedText, originalFile }) {
           : "Clean template · Improved text"}
       </p>
 
-      <div className="flex flex-wrap justify-center gap-3">
-        {/* DOCX download — in-place if original was DOCX */}
-        <button
-          onClick={() => download("docx")}
-          disabled={downloading !== null}
-          className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold shadow-lg shadow-emerald-500/30 transition disabled:opacity-50"
-        >
-          {downloading === "docx" ? (
-            <>
-              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              Preparing...
-            </>
-          ) : (
-            <>
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
-                />
-              </svg>
-              {isDocx ? "Download DOCX (same design)" : "Download DOCX"}
-            </>
-          )}
-        </button>
-
-        {/* PDF download — always available */}
-        <button
-          onClick={() => download("pdf")}
-          disabled={downloading !== null}
-          className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-rose-500 to-red-500 hover:from-rose-600 hover:to-red-600 text-white font-semibold shadow-lg shadow-rose-500/30 transition disabled:opacity-50"
-        >
-          {downloading === "pdf" ? (
-            <>
-              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              Preparing...
-            </>
-          ) : (
-            <>
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
-                />
-              </svg>
-              Download PDF
-            </>
-          )}
-        </button>
-      </div>
-
-      <p className="text-xs text-gray-400 mt-5">
-        {isDocx
-          ? "📄 Your original design preserved · Only the text changed"
-          : "📄 Clean professional template · Text improved by AI"}
-      </p>
+      {/* Single download button */}
+      <button
+        onClick={handleDownload}
+        disabled={downloading}
+        className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 transition disabled:opacity-50"
+      >
+        {downloading ? (
+          <>
+            <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            Preparing...
+          </>
+        ) : (
+          <>
+            <Download className="w-5 h-5" strokeWidth={2.5} />
+            Download Resume
+          </>
+        )}
+      </button>
     </div>
   );
 }
