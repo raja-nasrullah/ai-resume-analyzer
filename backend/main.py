@@ -58,7 +58,7 @@ async def analyze(file: UploadFile = File(...)):
         raise HTTPException(400, f"Failed to read file: {e}")
 
     # 4. Validate text length
-    if len(text.strip()) < 100:
+    if len(text.strip()) < 30:
         raise HTTPException(400, "Resume text is too short or unreadable")
 
     # 5. Analyze with AI
