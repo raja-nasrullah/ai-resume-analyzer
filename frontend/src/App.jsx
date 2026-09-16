@@ -83,64 +83,98 @@ export default function App() {
         <div className="max-w-2xl mx-auto px-8 py-20 text-center fade-in-up">
           <div className="inline-block w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-6" />
           <p className="text-gray-700 text-lg">🤖 Analyzing your resume...</p>
-          <p className="text-gray-500 text-sm mt-2">
-            This takes 5–15 seconds
-          </p>
+          <p className="text-gray-500 text-sm mt-2">This takes 5–15 seconds</p>
         </div>
       )}
 
       {/* Results view */}
       {result && (
-        <div className="max-w-3xl mx-auto px-8 py-12 space-y-5 fade-in-up">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Your Results</h2>
+        <div className="max-w-5xl mx-auto px-6 py-12 fade-in-up">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">Your Results</h1>
             <button
               onClick={handleReset}
-              className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm text-gray-700 hover:border-indigo-300 hover:text-indigo-600 transition"
+              className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm text-gray-700 hover:border-indigo-300 hover:text-indigo-600 transition shadow-sm"
             >
               ← Analyze Another
             </button>
           </div>
 
-          <ScoreCard score={result.score} />
+          {/* TOP ROW: Score + Improve CTA */}
+          <div className="grid md:grid-cols-2 gap-5 mb-8">
+            <ScoreCard score={result.score} />
 
-          {/* Improve button */}
-          {!improvedText && (
-            <div className="bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl p-6 text-white text-center shadow-lg">
-              <p className="text-lg font-semibold mb-1">
-                🎯 Want to score 100/100?
-              </p>
-              <p className="text-sm opacity-90 mb-4">
-                Let AI rewrite your resume addressing every weakness
-              </p>
-              <button
-                onClick={handleImprove}
-                disabled={improving}
-                className="px-6 py-2.5 rounded-xl bg-white text-indigo-600 font-semibold hover:bg-gray-50 transition disabled:opacity-50"
-              >
-                {improving ? "✨ Rewriting..." : "✨ Improve My Resume"}
-              </button>
+            {/* Improve CTA */}
+            {!improvedText ? (
+              <div className="rounded-3xl p-8 shadow-md flex flex-col items-center justify-center text-center text-white bg-gradient-to-br from-purple-600 via-purple-500 to-indigo-600 relative overflow-hidden">
+                {/* Decorative circles */}
+                <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/10" />
+                <div className="absolute -bottom-16 -left-10 w-52 h-52 rounded-full bg-white/5" />
+
+                <div className="relative z-10">
+                  <p className="text-xl font-bold mb-2">
+                    🎯 Want to score 100/100?
+                  </p>
+                  <p className="text-sm opacity-90 mb-5 max-w-xs">
+                    Let AI rewrite your resume addressing every weakness
+                  </p>
+                  <button
+                    onClick={handleImprove}
+                    disabled={improving}
+                    className="px-5 py-2.5 rounded-full bg-white text-purple-700 font-semibold hover:bg-gray-50 transition disabled:opacity-50 text-sm shadow-lg"
+                  >
+                    {improving ? "✨ Rewriting..." : "✨ Improve My Resume with AI"}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-3xl p-8 shadow-md bg-gradient-to-br from-emerald-500 to-emerald-600 text-white flex flex-col items-center justify-center text-center">
+                <p className="text-xl font-bold mb-2">✅ Resume Improved!</p>
+                <p className="text-sm opacity-90 mb-4">Scroll down to see the rewrite</p>
+              </div>
+            )}
+          </div>
+
+          {/* ANALYSIS CARDS HEADING */}
+          <h2 className="text-xl font-bold text-gray-900 mb-4">
+            Analysis Cards
+          </h2>
+
+          {/* MIDDLE ROW: Strengths + Weaknesses side by side */}
+          <div className="grid md:grid-cols-2 gap-5 mb-5">
+            <ResultsList
+              title="Strengths"
+              items={result.strengths}
+              color="text-green-600"
+              icon="✅"
+              badge={`+${result.strengths?.length || 0} insights`}
+              badgeColor="bg-green-50 text-green-700"
+            />
+            <ResultsList
+              title="Weaknesses"
+              items={result.weaknesses}
+              color="text-yellow-600"
+              icon="⚠️"
+              badge="Needs improvement"
+              badgeColor="bg-yellow-50 text-yellow-700"
+            />
+          </div>
+
+          {/* BOTTOM ROW: Suggestions full-width */}
+          <ResultsList
+            title="Suggestions"
+            items={result.suggestions}
+            color="text-purple-600"
+            icon="💡"
+          />
+
+          {/* Improved resume */}
+          {improvedText && (
+            <div className="mt-8">
+              <ImprovedResume improvedText={improvedText} />
             </div>
           )}
-
-          <ResultsList
-            title="✅ Strengths"
-            items={result.strengths}
-            color="text-green-600"
-          />
-          <ResultsList
-            title="⚠️ Weaknesses"
-            items={result.weaknesses}
-            color="text-yellow-600"
-          />
-          <ResultsList
-            title="💡 Suggestions"
-            items={result.suggestions}
-            color="text-indigo-600"
-          />
-
-          {/* Improved resume appears here */}
-          {improvedText && <ImprovedResume improvedText={improvedText} />}
         </div>
       )}
     </div>
